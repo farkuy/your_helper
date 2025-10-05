@@ -4,14 +4,18 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"time"
 
 	"github.com/joho/godotenv"
 	"gopkg.in/yaml.v3"
 )
 
 type ServerConfig struct {
-	Port string `yaml: "port"`
-	Host string `yaml: "host"`
+	Port         string        `yaml: "port"`
+	Host         string        `yaml: "host"`
+	ReadTimeout  time.Duration `yaml: "readTimeout"`
+	WriteTimeout time.Duration `yaml: "writeTimeout"`
+	Environment  string        `yaml: "environment"`
 }
 
 func Init() (*ServerConfig, error) {
