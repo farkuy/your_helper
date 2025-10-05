@@ -4,18 +4,19 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"time"
 
 	"github.com/joho/godotenv"
 	"gopkg.in/yaml.v3"
 )
 
+// TODO: сделать нормальную работу со временем, сейчас время соединения 0
 type ServerConfig struct {
-	Port         string        `yaml: "port"`
-	Host         string        `yaml: "host"`
-	ReadTimeout  time.Duration `yaml: "readTimeout"`
-	WriteTimeout time.Duration `yaml: "writeTimeout"`
-	Environment  string        `yaml: "environment"`
+	Port         string `yaml:"port"`
+	Host         string `yaml:"host"`
+	ReadTimeout  int    `yaml:"readTimeout"`
+	WriteTimeout int    `yaml:"writeTimeout"`
+	Environment  string `yaml:"environment"`
+	TgBotToken   string `yaml:"token"`
 }
 
 func Init() (*ServerConfig, error) {

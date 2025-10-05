@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"your_helper/internal/bot"
 	"your_helper/internal/config"
 	log_wrapper "your_helper/internal/log"
 )
@@ -15,5 +16,6 @@ func main() {
 
 	log_wrapper.Init(cfg.Environment)
 
-	//slog.Info("Сервер начал работу")
+	tgBot := bot.Init(cfg.TgBotToken)
+	tgBot.Listener()
 }
