@@ -1,23 +1,43 @@
 package bot
 
 import (
+	"log"
 	"log/slog"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-type TgBot struct {
-	Api tgbotapi.BotAPI
+type RequestMsg interface {
+	CreateAnswer(text string) (string, error)
 }
 
-func Init(token string) *TgBot {
+type TgBot struct {
+	Api        tgbotapi.BotAPI
+	MsgHandler RequestMsg
+}
+
+func Init(token string, msgHandler RequestMsg) *TgBot {
 	bot, err := tgbotapi.NewBotAPI(token)
 	if err != nil {
 		slog.Error("ошибка при подключении бота: %v", err)
+		log.Fatal(err)
 	}
 	slog.Info("Бот успешно получил соединение")
 
-	return &TgBot{Api: *bot}
+	return &TgBot{Api: *bot, MsgHandler: msgHandler}
+}
+
+func (bot *TgBot) SendMessage(userId int64, text string) {
+	msg, err := bot.MsgHandler.CreateAnswer(text)
+	if err != nil {
+		slog.Error("произошла ошибка: %v", err)
+		msg = "Произошла ошибка обработки ответа"
+	}
+
+	msgToSend := tgbotapi.NewMessage(userId, msg)
+	if _, err := bot.Api.Send(msgToSend); err != nil {
+		slog.Error("Ошибка при отправке сообщения: %v", err)
+	}
 }
 
 func (bot *TgBot) Listener() {
@@ -29,19 +49,11 @@ func (bot *TgBot) Listener() {
 	slog.Info("Бот начал цикл прослушки")
 	for update := range updates {
 		if update.Message != nil {
-			var msg tgbotapi.MessageConfig
 
 			messages := update.Message.Text
 			userId := update.Message.Chat.ID
 
-			switch messages {
-			case "/start":
-				msg = tgbotapi.NewMessage(userId, "Жми екарный бабай")
-			default:
-				msg = tgbotapi.NewMessage(userId, "Я хз что это")
-			}
-
-			bot.Api.Send(msg)
+			bot.SendMessage(userId, messages)
 		}
 	}
 }

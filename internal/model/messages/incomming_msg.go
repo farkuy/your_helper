@@ -1,26 +1,23 @@
 package messages
 
-import (
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-)
+type Model struct{}
 
-type Message struct {
-	UserId int64
-	Text   string
+func Init() *Model {
+	return &Model{}
 }
 
-type MessageSender interface {
-	NewMessage(userId int64, text string) tgbotapi.MessageConfig
-}
+func (m *Model) CreateAnswer(text string) (string, error) {
+	var (
+		res string = ""
+		err error  = nil
+	)
 
-type Model struct {
-	tgClient MessageSender
-}
+	switch text {
+	case "/hi":
+		res, err = "Жми екарный бабай", nil
+	default:
+		res, err = "Я хз что это", nil
+	}
 
-func Init(m *MessageSender) *Model {
-	return &Model{tgClient: *m}
-}
-
-func (m *Model) PostAnswer(msg Message) {
-	m.tgClient.NewMessage(msg.UserId, "Без понятия что ты от меня хочешь")
+	return res, err
 }
