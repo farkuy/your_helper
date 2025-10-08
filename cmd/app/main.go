@@ -5,7 +5,7 @@ import (
 	"your_helper/internal/bot"
 	"your_helper/internal/config"
 	log_wrapper "your_helper/internal/log"
-	"your_helper/internal/model/messages"
+	"your_helper/internal/models/messages"
 )
 
 // TODO: сделать запрос по погоде надень

@@ -1,5 +1,7 @@
 package messages
 
+import "your_helper/internal/transports/rest/weather"
+
 type Model struct{}
 
 func Init() *Model {
@@ -15,6 +17,8 @@ func (m *Model) CreateAnswer(text string) (string, error) {
 	switch text {
 	case "/hi":
 		res, err = "Жми екарный бабай", nil
+	case "/weather":
+		res, err = weather.GetWeatherInfo("Дзержинск")
 	default:
 		res, err = "Я хз что это", nil
 	}

@@ -11,12 +11,11 @@ import (
 
 // TODO: сделать нормальную работу со временем, сейчас время соединения 0
 type ServerConfig struct {
-	Port         string `yaml:"port"`
-	Host         string `yaml:"host"`
-	ReadTimeout  int    `yaml:"readTimeout"`
-	WriteTimeout int    `yaml:"writeTimeout"`
-	Environment  string `yaml:"environment"`
-	TgBotToken   string `yaml:"token"`
+	Port        string `yaml:"port"`
+	Host        string `yaml:"host"`
+	Environment string `yaml:"environment"`
+	TgBotToken  string `yaml:"tokenTg"`
+	WeaterToken string `yaml:"tokenWeather"`
 }
 
 func Init() (*ServerConfig, error) {
