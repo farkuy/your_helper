@@ -1,11 +1,13 @@
 package messages
 
-import "your_helper/internal/transports/rest/weather"
+import "your_helper/internal/models/weather"
 
-type Model struct{}
+type Model struct {
+	weather weather.Model
+}
 
-func Init() *Model {
-	return &Model{}
+func Init(w weather.Model) *Model {
+	return &Model{weather: w}
 }
 
 func (m *Model) CreateAnswer(text string) (string, error) {
@@ -18,7 +20,7 @@ func (m *Model) CreateAnswer(text string) (string, error) {
 	case "/hi":
 		res, err = "Жми екарный бабай", nil
 	case "/weather":
-		res, err = weather.GetWeatherInfo("Дзержинск")
+		res, err = m.weather.WeatherLocationInfo("Дзержинск")
 	default:
 		res, err = "Я хз что это", nil
 	}

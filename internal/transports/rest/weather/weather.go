@@ -1,39 +1,66 @@
 package weather
 
-import "net/http"
-
-const (
-	getWeatherInfoKey = "/api.weatherapi.com/v1/current.json?q="
+import (
+	"encoding/json"
+	"fmt"
+	"net/http"
+	weather_model "your_helper/internal/models/weather"
 )
 
-type Model struct {
+const (
+	basePath          = "https://api.weatherapi.com/v1"
+	getWeatherInfoKey = "/current.json"
+)
+
+type Transport struct {
 	apiKey string
 }
 
-func Init(key string) Model {
-	return Model{apiKey: key}
+func Init(key string) Transport {
+	return Transport{apiKey: key}
 }
 
-func (m *Model) AddEndKey() string {
-	return "&key=" + m.apiKey
-}
-
-// TODO: добавить возможность менять язык
-func AddEndLang() string {
-	return "&lang=ru"
-}
-
-func (m *Model) Get(path string) (resp *http.Response, err error) {
-	resp, err = http.Get("https://" + path + AddEndLang() + m.AddEndKey())
+func (m *Transport) Get(path string, params map[string]string) (res *http.Response, err error) {
+	req, err := http.NewRequest("GET", basePath+path, nil)
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
 
-	return resp, err
+	q := req.URL.Query()
+	for key, val := range params {
+		q.Add(key, val)
+	}
+	q.Add("lang", "ru")
+	q.Add("key", m.apiKey)
+	req.URL.RawQuery = q.Encode()
+	fmt.Println(req)
+
+	client := &http.Client{}
+	res, err = client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, err
 }
 
-func (m *Model) GetWeatherInfo(location string) (string, error) {
-	resp, err := m.Get(getWeatherInfoKey + location)
+func (m *Transport) GetWeatherInfo(location string) (weather_model.WeatherLocation, error) {
+	fmt.Println(location)
+	var weather weather_model.WeatherLocation
+	localParams := map[string]string{
+		"q": location,
+	}
 
+	res, err := m.Get(getWeatherInfoKey, localParams)
+	fmt.Println(res)
+	if err != nil {
+		return weather_model.WeatherLocation{}, err
+	}
+
+	err = json.NewDecoder(res.Body).Decode(&weather)
+	if err != nil {
+		return weather_model.WeatherLocation{}, err
+	}
+
+	return weather, err
 }
