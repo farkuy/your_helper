@@ -3,6 +3,7 @@ package weather
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 	weather_model "your_helper/internal/models/weather"
 )
@@ -44,23 +45,30 @@ func (m *Transport) Get(path string, params map[string]string) (res *http.Respon
 	return res, err
 }
 
-func (m *Transport) GetWeatherInfo(location string) (weather_model.WeatherLocation, error) {
-	fmt.Println(location)
+func (m *Transport) GetWeatherInfo(location string) (weather_model.WeatherLocation, int, error) {
+	log := slog.With("PATH: transports/rest/weather")
+
 	var weather weather_model.WeatherLocation
 	localParams := map[string]string{
 		"q": location,
 	}
 
 	res, err := m.Get(getWeatherInfoKey, localParams)
-	fmt.Println(res)
+	statusCode := res.StatusCode
 	if err != nil {
-		return weather_model.WeatherLocation{}, err
+		log.Error("Ошибка при запросе: %v", err)
+		return weather_model.WeatherLocation{}, statusCode, err
+	}
+	if res.StatusCode == 400 {
+		log.Warn("Данные по локации не найдены")
+		return weather_model.WeatherLocation{}, statusCode, err
 	}
 
 	err = json.NewDecoder(res.Body).Decode(&weather)
 	if err != nil {
-		return weather_model.WeatherLocation{}, err
+		log.Error("Ошибка парсинга json", location)
+		return weather_model.WeatherLocation{}, statusCode, err
 	}
 
-	return weather, err
+	return weather, statusCode, err
 }

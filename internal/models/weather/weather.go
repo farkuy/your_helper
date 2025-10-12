@@ -24,7 +24,7 @@ type WeatherLocation struct {
 }
 
 type WeatherInfo interface {
-	GetWeatherInfo(location string) (WeatherLocation, error)
+	GetWeatherInfo(location string) (WeatherLocation, int, error)
 }
 
 type Model struct {
@@ -36,13 +36,26 @@ func Init(w WeatherInfo) *Model {
 }
 
 func (m *Model) WeatherLocationInfo(location string) (string, error) {
-	weather, err := m.Weather.GetWeatherInfo(location)
+	if location == "" {
+		return "Введите город", nil
+	}
+
+	weather, statusCode, err := m.Weather.GetWeatherInfo(location)
 	if err != nil {
 		return "", err
 	}
 
-	return fmt.Sprintf("В городе %s сейчас температура %d°C, ощущается как %d°C, влажность %d%%. Погода %s, ветер дует со скоростью %d км/ч.",
+	//TODO: будумать над мидл вареной которая будет обрабатывать эти запросы
+	switch statusCode {
+	case 400:
+		return "Данные по городу не найдены", nil
+	case 500:
+		return "Ошибка сервера, попробуйте позже", nil
+	}
+
+	return fmt.Sprintf("В городе %s по %s сейчас температура %.2f°C, ощущается как %.2f°C, влажность %.2f%%. Ветер дует со скоростью %.2f км/ч.",
 		weather.Location.City,
+		weather.Location.Region,
 		weather.Current.TempC,
 		weather.Current.FeelslikeC,
 		weather.Current.Humidity,
