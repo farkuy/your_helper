@@ -37,7 +37,7 @@ func (m *Model) CreateAnswer(text string) (string, error) {
 	if len(words) > 1 {
 		switch words[0] {
 		case "/weather":
-			res, err = m.WeatherModel.WeatherLocationInfo(words[1])
+			res, err = m.WeatherModel.WeatherLocationInfo(words[1:])
 		default:
 			res, err = "Проверьте вводимую команду", nil
 		}
