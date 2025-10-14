@@ -37,7 +37,6 @@ func Init(w WeatherInfo) *Model {
 	return &Model{Weather: w}
 }
 
-// TODO: сделать для нескольких запросов сразу
 func (m *Model) WeatherLocationInfo(locations []string) (string, error) {
 	message := ""
 

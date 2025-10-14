@@ -9,13 +9,20 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// TODO: сделать нормальную работу со временем, сейчас время соединения 0
+type BdConfig struct {
+	User     string `yaml:"user"`
+	Password string `yaml:"password"`
+	Dbname   string `yaml:"dbname"`
+	Sslmode  string `yaml:"sslmode"`
+}
+
 type ServerConfig struct {
-	Port        string `yaml:"port"`
-	Host        string `yaml:"host"`
-	Environment string `yaml:"environment"`
-	TgBotToken  string `yaml:"tokenTg"`
-	WeaterToken string `yaml:"tokenWeather"`
+	Port        string   `yaml:"port"`
+	Host        string   `yaml:"host"`
+	Environment string   `yaml:"environment"`
+	TgBotToken  string   `yaml:"tokenTg"`
+	WeaterToken string   `yaml:"tokenWeather"`
+	BdConfig    BdConfig `yaml:"bdConfig"`
 }
 
 func Init() (*ServerConfig, error) {
