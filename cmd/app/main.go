@@ -8,7 +8,9 @@ import (
 	"your_helper/database"
 	"your_helper/internal/bot"
 	"your_helper/internal/config"
+	location_bd "your_helper/internal/database/location"
 	log_wrapper "your_helper/internal/log"
+	"your_helper/internal/models/location"
 	"your_helper/internal/models/messages"
 	"your_helper/internal/models/weather"
 	weather_tranport "your_helper/internal/transports/rest/weather"
@@ -30,9 +32,12 @@ func main() {
 	defer db.Close(context.Background())
 
 	weatherTr := weather_tranport.Init(cfg.WeaterToken)
-	wetaherModel := weather.Init(&weatherTr)
+	wetaherModel := weather.Init(weatherTr)
 
-	msg := messages.Init(*wetaherModel)
+	locationBd := location_bd.Init(db)
+	locationModel := location.Init(&locationBd)
+
+	msg := messages.Init(wetaherModel, locationModel)
 	tgBot := bot.Init(cfg.TgBotToken, msg)
 
 	tgBot.Listener()

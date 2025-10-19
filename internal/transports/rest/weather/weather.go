@@ -17,8 +17,8 @@ type Transport struct {
 	apiKey string
 }
 
-func Init(key string) Transport {
-	return Transport{apiKey: key}
+func Init(key string) *Transport {
+	return &Transport{apiKey: key}
 }
 
 func (m *Transport) Get(path string, params map[string]string) (res *http.Response, err error) {

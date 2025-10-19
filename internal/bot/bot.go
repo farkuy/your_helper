@@ -8,7 +8,7 @@ import (
 )
 
 type RequestMsg interface {
-	CreateAnswer(text string) (string, error)
+	CreateAnswer(userId int64, text string) (string, error)
 }
 
 type TgBot struct {
@@ -28,7 +28,7 @@ func Init(token string, msgHandler RequestMsg) *TgBot {
 }
 
 func (bot *TgBot) SendMessage(userId int64, text string) {
-	msg, err := bot.MsgHandler.CreateAnswer(text)
+	msg, err := bot.MsgHandler.CreateAnswer(userId, text)
 	if err != nil {
 		slog.Error("произошла ошибка: %v", err)
 		msg = "Произошла ошибка обработки ответа"
