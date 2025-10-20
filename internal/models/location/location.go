@@ -8,6 +8,7 @@ import (
 type Location struct {
 	Id       int    `db:"id" json:"id"`
 	Location string `db:"location" json:"location"`
+	Email    string `db:"email" json:"email"`
 }
 
 type LocationInfo interface {
@@ -44,6 +45,10 @@ func (m *Model) GetLocation(id int64) (string, error) {
 	if err != nil {
 		slog.Error(err.Error())
 		return fmt.Sprintln("Произошла ошибка при поиcке города в вашем профиле"), err
+	}
+
+	if locInfo.Location == "" {
+		return fmt.Sprintln("У вас не задан город"), nil
 	}
 
 	return fmt.Sprintf("Ваш город %s", locInfo.Location), nil

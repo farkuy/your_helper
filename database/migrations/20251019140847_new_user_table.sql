@@ -1,11 +1,12 @@
 -- +goose Up
 -- +goose StatementBegin
-ALTER TABLE users
-    ADD COLUMN some_table TEXT DEFAULT 'some text';
+CREATE TABLE IF NOT EXISTS users (
+    id SERIAL PRIMARY KEY,
+    location TEXT
+);
 -- +goose StatementEnd
 
 -- +goose Down
 -- +goose StatementBegin
-ALTER TABLE users
-    DROP COLUMN some_table;
+DROP TABLE users;
 -- +goose StatementEnd

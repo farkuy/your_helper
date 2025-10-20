@@ -13,7 +13,7 @@ const (
 	addLocation    = "INSERT INTO users (id, location) VALUES ($1, $2) RETURNING id, location"
 	updateLocation = "UPDATE users SET location = $1 WHERE id = $2 RETURNING id, location"
 	checkUserInfo  = "SELECT EXISTS (SELECT 1 FROM users WHERE id = $1)"
-	getUserInfo    = "SELECT * FROM users WHERE id = $1"
+	getUserInfo    = "SELECT id, COALESCE(location, ''), COALESCE(email, '') FROM users WHERE id = $1"
 )
 
 type Transport struct {
@@ -71,7 +71,7 @@ func (t *Transport) GetLocationInfo(id int64) (location.Location, error) {
 		return location.Location{}, errors.New("У пользователя не установлен город")
 	}
 
-	err = t.bd.QueryRow(context.Background(), getUserInfo, id).Scan(&loc.Id, &loc.Location)
+	err = t.bd.QueryRow(context.Background(), getUserInfo, id).Scan(&loc.Id, &loc.Location, &loc.Email)
 	if err != nil {
 		log.Error("Failed get row in user table with id", "id", id, "error", err)
 		return location.Location{}, err

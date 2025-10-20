@@ -10,13 +10,12 @@ import (
 	"github.com/jackc/pgx/v4"
 )
 
-type Query struct {
-	name        string
-	createQuery string
+type CheckedTable struct {
+	name string
 }
 
-var tablesName = []Query{
-	{name: "users", createQuery: createUserTable},
+var tablesName = []CheckedTable{
+	{name: "users"},
 }
 
 func Init(bdCfg config.BdConfig) (*pgx.Conn, error) {
@@ -36,19 +35,11 @@ func Init(bdCfg config.BdConfig) (*pgx.Conn, error) {
 		if err != nil {
 			log.Fatal("QueryRow failed: ", query.name, " ", err)
 		}
-
-		if !exists {
-			if _, err := db.Exec(context.Background(), query.createQuery); err != nil {
-				log.Fatal("Failed create table: ", query.name, " ", err)
-			}
-			slog.Info("Create table: ", query.name)
-		}
 	}
 
 	return db, nil
 }
 
-// TODO: узнать норм это или есть опасность инъекций
 func checkTable(tableName string) string {
 	return fmt.Sprintf(`
         SELECT EXISTS (
